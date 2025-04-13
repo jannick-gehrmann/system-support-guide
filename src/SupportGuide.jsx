@@ -1,7 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Check, XCircle } from "lucide-react";
+import React, { useState } from 'react';
+import './index.css';
 
 const diagnosticItems = [
   {
@@ -43,8 +41,7 @@ const diagnosticItems = [
     key: "secureboot",
     title: "Secure Boot",
     ideal: "Disabled (for advanced tools)",
-    description: "Checks if UEFI Secure Boot is enabled. This can prevent loading of unsigned drivers."
-    ,
+    description: "Checks if UEFI Secure Boot is enabled. This can prevent loading of unsigned drivers.",
     fix: "Enter your BIOS settings and disable Secure Boot under the Security tab."
   },
   {
@@ -65,8 +62,7 @@ const diagnosticItems = [
     key: "virtualization",
     title: "Virtualization",
     ideal: "Enabled",
-    description: "Indicates whether hardware virtualization support is enabled in firmware. Required for certain sandboxed tools."
-    ,
+    description: "Indicates whether hardware virtualization support is enabled in firmware. Required for certain sandboxed tools.",
     fix: "Enable Intel VT-x / AMD-V in BIOS under CPU Configuration."
   },
   {
@@ -79,43 +75,47 @@ const diagnosticItems = [
 ];
 
 export default function SupportGuide() {
+  const [selected, setSelected] = useState("os");
+
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold">System Compatibility Support Guide</h1>
-      <p className="text-muted-foreground">
-        This support guide provides a breakdown of all the key system-level components we recommend reviewing. Each tab includes a definition, ideal state, and instructions to resolve common issues.
+    <div style={{ padding: '2rem', maxWidth: '900px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>System Compatibility Support Guide</h1>
+      <p style={{ color: '#666' }}>
+        This support guide provides a breakdown of all the key system-level components we recommend reviewing. Click each item to see what it means, what the ideal state is, and how to fix issues.
       </p>
 
-      <Tabs defaultValue="os" className="w-full">
-        <TabsList className="flex flex-wrap gap-2">
-          {diagnosticItems.map((item) => (
-            <TabsTrigger value={item.key} key={item.key} className="text-sm">
-              {item.title}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1rem' }}>
         {diagnosticItems.map((item) => (
-          <TabsContent value={item.key} key={item.key}>
-            <Card>
-              <CardContent className="p-6 space-y-4">
-                <h2 className="text-xl font-semibold">{item.title}</h2>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-                <div className="flex items-center gap-2">
-                  <Check className="text-green-500" />
-                  <strong>Ideal State:</strong>
-                  <span>{item.ideal}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <XCircle className="text-red-500" />
-                  <strong>How to Fix:</strong>
-                  <span>{item.fix}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <button
+          key={item.key}
+          onClick={() => setSelected(item.key)}
+          className={selected === item.key ? 'active' : ''}
+            style={{
+              padding: '0.5rem 1rem',
+              border: '1px solid #ccc',
+              backgroundColor: selected === item.key ? '#007acc' : 'white',
+              color: selected === item.key ? 'white' : 'black',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
+          >
+            {item.title}
+          </button>
         ))}
-      </Tabs>
+      </div>
+
+      <div style={{ marginTop: '2rem', border: '1px solid #ddd', borderRadius: '8px', padding: '1rem' }}>
+        {diagnosticItems.map((item) =>
+          item.key === selected ? (
+            <div key={item.key}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: '600' }}>{item.title}</h2>
+              <p style={{ marginBottom: '1rem', color: '#444' }}>{item.description}</p>
+              <p><strong>✅ Ideal State:</strong> {item.ideal}</p>
+              <p><strong>🔧 How to Fix:</strong> {item.fix}</p>
+            </div>
+          ) : null
+        )}
+      </div>
     </div>
   );
 }
